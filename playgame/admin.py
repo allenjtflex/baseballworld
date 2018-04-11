@@ -1,9 +1,15 @@
 from django.contrib import admin
-from .models import (Member,Team, TeamMember,Cup, CupGroup,BatResult,Schedule, Game,BatterOrder,League)
+from .models import (Member,Team, TeamMember,Cup, CupGroup,BatResult,Schedule, Game,BatterOrder,League, Place)
 # Register your models here.
 
 
+
+
 admin.site.register(League)
+
+
+
+admin.site.register(Place)
 admin.site.register(Member)
 
 

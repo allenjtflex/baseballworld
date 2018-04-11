@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <table class="table table-striped">
+
+    <tr>
+      <th>排程日期</th>
+      <th>場地</th>
+      <th>Guest</th>
+      <th>Score</th>
+      <th>Home</th>
+    </tr>
+    {% for schedule in schedule_list %}
+      <tr>
+        <td>{{ schedule.id  }} . {{ schedule.dif_date| date:"Y-m-d"  }}</td>
+        <td> <a href='{{ schedule.get_absolute_url }}'>{{ schedule.place }}</a></td>
+        <td> {{ schedule.guest }}</td>
+        <td> {{ schedule.guest_score }} : {{ schedule.home_score }}</td>
+        <td> {{ schedule.home }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+
+{% endblock %}

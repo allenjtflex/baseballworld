@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <table class="table table-striped">
+賽事名稱：  {{ schedule.cup|title }}<br>
+場次編號：  {{ schedule.id  }}
+    <tr>
+      <th>排程日期</th>
+      <th>場地</th>
+      <th>Guest</th>
+      <th>Score</th>
+      <th>Home</th>
+      <th>Score</th>
+    </tr>
+    <tr>
+      <td>{{ schedule.dif_date| date:"Y-m-d"  }}</td>
+      <td> {{ schedule.place }}</td>
+      <td> {{ schedule.guest }}</td>
+      <td> {{ schedule.guest_score }} : {{ schedule.home_score }}</td>
+      <td> {{ schedule.home }}</td>
+    </tr>
+
+  </table>
+打擊成績<Br>
+  <table class="table table-striped">
+    <tr>
+      <th>主場</th>
+      <th>球員姓名</th>
+      <th>打席1</th>
+      <th>打席2</th>
+      <th>打席3</th>
+      <th>打席4</th>
+      <th>打席5</th>
+    </tr>
+  {% for order in schedule.batterorder_set.all %}
+  <tr>
+    <td>{{ order.is_Home }}</td>
+      <td>{{ order.player }}</td>
+      <td>{{ order.batseat1|default_if_none:"" }}</td>
+      <td>{{ order.batseat2|default_if_none:""  }}</td>
+      <td>{{ order.batseat3|default_if_none:""  }}</td>
+      <td>{{ order.batseat4|default_if_none:""  }}</td>
+      <td>{{ order.batseat5|default_if_none:""  }}</td>
+    </tr>
+
+  {% endfor %}
+</table>
+
+{% endblock %}

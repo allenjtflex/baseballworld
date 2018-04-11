@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.urlresolvers import reverse
 
 # Create your models here.
 # #守備位置
@@ -6,12 +7,23 @@ from django.db import models
 #     position = models.CharField(primary_key =True,max_length=2 )
 #     description = models.CharField(max_length=30, null=False, blank=False)
 
+# 聯盟
 class League(models.Model):
     title = models.CharField(max_length=30,null=False, blank=False)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
+
+# 球場
+class Place(models.Model):
+    league = models.ForeignKey( League, blank=False, null=False )
+    title = models.CharField(max_length=30,blank=False, null=False )
+
+    def __str__(self):
+        return self.title
+
+
 
 #打擊結果選項
 class BatResult(models.Model):
@@ -96,6 +108,8 @@ class CupGroup(models.Model):
 class Schedule(models.Model):
     dif_date = models.DateField()  #預定日期
     cup = models.ForeignKey( Cup, on_delete=models.CASCADE ,limit_choices_to = { 'is_finished': False  })    #盃賽
+    place = models.ForeignKey( Place, on_delete=models.CASCADE  )
+
     playdate = models.DateField()#比賽日期
     guest = models.OneToOneField( Team, on_delete=models.CASCADE )    #客隊
     home =  models.OneToOneField( Team, on_delete=models.CASCADE,related_name="home" )    #主隊
@@ -105,6 +119,12 @@ class Schedule(models.Model):
 
     def __str__(self):
         return '%s : %s' %(self.guest , self.home)
+
+    def get_absolute_url(self):
+        # return reverse( "playgame:schedule_detail", kwargs={"pk": self.pk} )
+        return reverse( "playgames:schedule_detail", args=[self.id])
+
+
 
     class Meta:
         unique_together = ("cup", "guest", "home")
@@ -118,36 +138,33 @@ class Game(models.Model):
 #   攻守名單
 class BatterOrder(models.Model):
     schedule = models.ForeignKey( Schedule, on_delete=models.CASCADE )    #盃賽
-    POSITION = (
-        ('1', 'P'),
-        ('2', 'C'),
-        ('3', '1B'),
-        ('4', '2B'),
-        ('5', '3B'),
-        ('6', 'SS'),
-        ('7', 'LF'),
-        ('8', 'CF'),
-        ('9', 'RF'),
-        ('DH','DH'),
-    )
+    # POSITION = (
+    #     ('1', 'P'),
+    #     ('2', 'C'),
+    #     ('3', '1B'),
+    #     ('4', '2B'),
+    #     ('5', '3B'),
+    #     ('6', 'SS'),
+    #     ('7', 'LF'),
+    #     ('8', 'CF'),
+    #     ('9', 'RF'),
+    #     ('DH','DH'),
+    # )
 
     # game = models.ForeignKey( Game, on_delete=models.CASCADE )#比賽場次
-    team = models.ForeignKey( Team, on_delete=models.CASCADE )#球隊
+    # team = models.ForeignKey( Team, on_delete=models.CASCADE )#球隊
+    is_Home = models.BooleanField( default = False )
     player = models.ForeignKey( TeamMember, on_delete=models.CASCADE  )#球員
-    position = models.CharField(
-        max_length=2,
-        choices=POSITION
-        )
-    batseat1 = models.OneToOneField( BatResult, on_delete=models.CASCADE, null=True, blank=True ,related_name="batseat1")#打席1
-    batseat2 = models.OneToOneField( BatResult, on_delete=models.CASCADE, null=True, blank=True ,related_name="batseat2")#打席2
-    batseat3 = models.OneToOneField( BatResult, on_delete=models.CASCADE, null=True, blank=True ,related_name="batseat3")#打席3
-    batseat4 = models.OneToOneField( BatResult, on_delete=models.CASCADE, null=True, blank=True ,related_name="batseat4")#打席4
-    batseat5 = models.OneToOneField( BatResult, on_delete=models.CASCADE, null=True, blank=True ,related_name="batseat5")#打席5
+    # position = models.CharField(
+    #     max_length=2,
+    #     choices=POSITION
+    #     )
+    batseat1 = models.ForeignKey( BatResult, on_delete=models.CASCADE, null=True, blank=True ,related_name="batseat1")#打席1
+    batseat2 = models.ForeignKey( BatResult, on_delete=models.CASCADE, null=True, blank=True ,related_name="batseat2")#打席2
+    batseat3 = models.ForeignKey( BatResult, on_delete=models.CASCADE, null=True, blank=True ,related_name="batseat3")#打席3
+    batseat4 = models.ForeignKey( BatResult, on_delete=models.CASCADE, null=True, blank=True ,related_name="batseat4")#打席4
+    batseat5 = models.ForeignKey( BatResult, on_delete=models.CASCADE, null=True, blank=True ,related_name="batseat5")#打席5
     # batseat6 = models.OneToOneField( BatResult, on_delete=models.CASCADE, null=True, blank=True ,related_name="batseat6")#打席6
-# #
-#
-# # #   打擊結果
-# # #class Plays(models.Model):
-from django.db import models
 
-# Create your models here.
+    class Meta:
+        ordering = ['is_Home', 'id']
